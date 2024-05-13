@@ -4,23 +4,22 @@ import re
 import pytesseract
 from PIL import Image
 
-ACCOUNT_NUMBER_PATTER = '\d{2}\s+\d{4}\s+\d{4}\s+\d{4}\s+\d{4}\s+\d{4}\s+\d{4}'
+ACCOUNT_NUMBER_PATTER = '\d{2}\s\d{4}\s\d{4}\s\d{4}\s\d{4}\s\d{4}\s\d{4}'
 
 
-def args_validation(arg_input):
+def input_args_validation(arg_input):
     image_file = arg_input['image']
-    if not os.path.isfile(image_file):
-        return False
+    assert os.path.isfile(image_file), "Problem with image file"
 
     # Account number validation
     account_number = arg_input['account_number']
     if account_number[0] == ' ' or account_number[len(account_number) - 1] == ' ':
-        return False
+        assert False, "Please remove trailing space before/after the account number"
 
     match = re.search(ACCOUNT_NUMBER_PATTER, account_number)
     if not match:
-        return False
-    return True
+        assert False, ("The input account number is not valid. It should be in the following format:XX XXXX XXXX XXXX "
+                       "XXXX XXXX XXXX")
 
 
 def get_account_number_from_raw_ocr(ocr_txt):
@@ -42,10 +41,10 @@ def account_number_validation(current_account_number, parsed_account_number):
         else:
             error_digit_pos_index.append(index)
 
+    print("Account number to check:")
+    print(account_to_check)
     percent_matcher = (number_of_validated_digits * 100 / 26)
     if percent_matcher != 100.0:
-        print("Account number to check:")
-        print(account_to_check)
         print("Parsed account number:")
         for i in range(0, len(parsed_account_number)):
             if i in error_digit_pos_index:
@@ -57,11 +56,12 @@ def account_number_validation(current_account_number, parsed_account_number):
         print("Account Number Validation: \x1b[31mFAIL\x1b[0m")
         assert False, "Account number validation failed"
 
+    print("Parsed account number:")
+    print(parsed_account_number)
     print("Matched in \x1b[32m", percent_matcher, "%\x1b[0m")
     print("Account Number Validation \x1b[32mPASS\x1b[0m")
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--image",
@@ -72,7 +72,7 @@ if __name__ == '__main__':
                     help="the account number for validation")
     args = vars(ap.parse_args())
 
-    assert args_validation(args), "Args validation failed"
+    input_args_validation(args)
 
     account_to_check = args['account_number']
     filename = args['image'].format(os.getpid())

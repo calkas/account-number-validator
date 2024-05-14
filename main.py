@@ -24,9 +24,7 @@ if __name__ == '__main__':
 
     parsed_account_number = ocr_account_number_processor.get_number_account_from_image(image_file,
                                                                                        account_format_pattern_type)
-
-    is_good = anv.is_valid(parsed_account_number)
-    if is_good:
+    if anv.is_valid(parsed_account_number):
         print("Validation process - \x1b[32mPASSED\x1b[0m")
     else:
         print("Validation process - \x1b[31mFAILED\x1b[0m")

@@ -18,6 +18,8 @@ class AccountNumberValidator:
         self._incorrect_digit_position_index = []
 
     def _determine_type_of_account_number(self, input_account_number):
+        if not input_account_number:
+            assert False, "Input account number is empty"
         if input_account_number[0] == ' ' or input_account_number[len(input_account_number) - 1] == ' ':
             assert False, "Please remove trailing space before/after the account number"
         account_number_type_1 = re.search(ACCOUNT_NUMBER_PATTERN, input_account_number)

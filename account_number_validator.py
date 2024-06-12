@@ -9,34 +9,41 @@ ACCOUNT_NUMBER_PATTERN_2 = r"\d{26}"
 
 
 class AccountNumberValidator:
-    def __init__(self, input_account_number):
+    def __init__(self):
         self._re_account_number_pattern = ''
-        self._determine_type_of_account_number(input_account_number)
-        self._input_account_number = input_account_number
+        self._input_account_number = ''
         self._account_number_to_check = ''
         self._percentage_of_correctness = 0.0
         self._incorrect_digit_position_index = []
 
-    def _determine_type_of_account_number(self, input_account_number):
+    def determine_type_of_account_number(self, input_account_number):
         if not input_account_number:
-            assert False, "Input account number is empty"
+            return False, "Input account number is empty"
         if input_account_number[0] == ' ' or input_account_number[len(input_account_number) - 1] == ' ':
-            assert False, "Please remove trailing space before/after the account number"
+            return False, "Please remove trailing space before/after the account number"
         account_number_type_1 = re.search(ACCOUNT_NUMBER_PATTERN, input_account_number)
         account_number_type_2 = re.search(ACCOUNT_NUMBER_PATTERN_2, input_account_number)
 
         if not account_number_type_1 and not account_number_type_2:
-            assert False, (
-                "The input account number is not valid. It should be in the following format:XX XXXX XXXX XXXX "
-                "XXXX XXXX XXXX or XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            return False, (
+                "The input account number is not valid.\nIt should be in the following format:\nXX XXXX XXXX XXXX "
+                "XXXX XXXX XXXX\nor\nXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
         if account_number_type_1:
             self._re_account_number_pattern = ACCOUNT_NUMBER_PATTERN
         else:
             self._re_account_number_pattern = ACCOUNT_NUMBER_PATTERN_2
 
+        self._input_account_number = input_account_number
+
+        return True, input_account_number
+
+
     def get_account_number_pattern(self):
         return self._re_account_number_pattern
+
+    def get_percentage_of_correctness(self):
+        return self._percentage_of_correctness
 
     def is_valid(self, account_number_to_check):
         if len(self._input_account_number) != len(account_number_to_check):
